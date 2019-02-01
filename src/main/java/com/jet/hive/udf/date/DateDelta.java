@@ -27,7 +27,6 @@ import org.apache.hadoop.io.Text;
 import com.jet.utils.date.DateUtils;
 
 /**
- * UDFChr
  * <code>DateDelta(date,offsets)</code>. 
  * 仿python relativedelta实现日期相加操作,返回日期String
  *  
@@ -41,11 +40,13 @@ import com.jet.utils.date.DateUtils;
     		+ "		单位支持有year,month,day,hour,minute,second(或y,m,d,h,n,s)\n"
     		+ "		长度支持+N,-N,N\n"
     		+ "		示例： offsetsStr：'year=+2,month=8,day=-16'  年份加2，月份为8，日期减16\n"
+    		+ " > format: 可选；输出的日期格式，如yyyyMMddHHmmss和yyyy-MM-dd HH:mm:ss\n"
     + "Example:\n"
     + "  > SELECT DateDelta('20180102030405','day=+3') FROM src LIMIT 1;\n" + "  '20180105030405'\n"
     + "  > SELECT DateDelta('2018-01-02 03:04:05','day=+3') FROM src LIMIT 1;\n" + "  '2018-01-05 03:04:05'\n"
     + "  > SELECT DateDelta('20180102','day=+3') FROM src LIMIT 1;\n" + "  '20180105'\n"
     + "  > SELECT DateDelta('2018-01-02','day=+3') FROM src LIMIT 1;\n" + "  '2018-01-05'\n"
+    + "  > SELECT DateDelta('2018-01-02','day=+3' , 'yyyyMMdd') FROM src LIMIT 1;\n" + "  '20180105'\n"
     )
 @HivePdkUnitTests(
 	setup = "", cleanup = "",
@@ -60,9 +61,29 @@ import com.jet.utils.date.DateUtils;
 public class DateDelta extends UDF {
 	private Text result = new Text();
 	
-	public Text evaluate(Text dateText,Text offsetsText) {
-		String re = DateUtils.dateDeltaStr(dateText.toString(),offsetsText.toString());
-		result.set(re);
-		return result;
+	/**
+	 * 接受3个参数
+	 * @param args
+	 * @return
+	 */
+	public Text evaluate(Text... args) {
+		if(args.length>=2){
+			String dt = args[0].toString();
+			String offsets = args.length>=2 ? args[1].toString():null;
+			String format = args.length>=3 ? args[2].toString():null;
+			String re = DateUtils.dateDeltaStr(dt,offsets,format);
+			result.set(re);
+			return result;
+		}else if(args.length==1){
+			if (args[0]==null) {
+				return null;
+			}else{
+				result.set(args[0].toString());
+				return result;
+			}
+		}else{
+			return null;
+		}
+		
 	}
 }
