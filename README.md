@@ -163,11 +163,11 @@ create temporary function DateDelta
 
 - DEMO( current time =[2019-02-01 11:06:31])
 
-| DESC                  | CODE                                        | RESULT         |
-| --------------------- | ------------------------------------------- | -------------- |
-| now+3day              | SELECT CurrentDateDelta2('+3')              | 20190204030405 |
-| now+3day              | SELECT CurrentDateDelta2('day=+3')          | 20190204030405 |
-| end day of this month | SELECT CurrentDateDelta2('month=+1,day=-1') | 20190228030405 |
+| DESC                  | CODE                                            | RESULT         |
+| --------------------- | ----------------------------------------------- | -------------- |
+| now+3day              | SELECT CurrentDateTimeDelta2('+3')              | 20190204030405 |
+| now+3day              | SELECT CurrentDateTimeDelta2('day=+3')          | 20190204030405 |
+| end day of this month | SELECT CurrentDateTimeDelta2('month=+1,day=-1') | 20190228030405 |
 
 
 
