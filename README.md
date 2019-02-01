@@ -15,7 +15,7 @@ Get any day you wanted!
 1.download jet-hive-date-udf-0.2.jar
 
 2.put jar to hdfs
-hadoop fs -put jet-hive-date-udf-0.1.jar 'hdfs:///tmp/hive' 
+hadoop fs -put jet-hive-date-udf-0.2.jar 'hdfs:///tmp/hive' 
 
 3.create function 
 create temporary function DateDelta
