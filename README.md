@@ -14,6 +14,7 @@ Get any day you wanted!
 ```mysql
 1.download jet-hive-date-udf-x.jar(x>=0.2) or compile jar using source code
 
+
 2.put jar to hdfs(Or Local file)
 hadoop fs -put jet-hive-date-udf-0.2.jar 'hdfs:///tmp/hive' 
 
