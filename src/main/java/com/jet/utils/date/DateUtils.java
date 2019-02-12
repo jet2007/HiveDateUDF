@@ -54,22 +54,7 @@ public class DateUtils {
 	 *         dateDeltaStr("2018-01-02","day=+3")   "2018-01-05"
 	 */
 	public static String dateDeltaStr(String dateStr, String offsetsStr){
-		String ds = dateStr.replace(" ", "").replace("-", "").replace(":", "");
-		boolean f2 = dateStr.contains(" ") || dateStr.contains(":") || dateStr.contains("-"); // 包含[:-空格]任何一个
-		String formatStr=null;
-		if(ds.length()==8){//日期或日期+时间格式
-			if (f2)
-				formatStr="yyyy-MM-dd";
-			else
-				formatStr="yyyyMMdd";
-		}
-		else {
-			if (f2)
-				formatStr="yyyy-MM-dd HH:mm:ss";
-			else
-				formatStr="yyyyMMddHHmmss";
-		}
-		return dateDeltaStr(dateStr,offsetsStr,formatStr);
+		return dateDeltaStr(dateStr,offsetsStr,null);
 		
 	}
 	
@@ -86,8 +71,23 @@ public class DateUtils {
 	 */
 	public static String dateDeltaStr(String dateStr, String offsetsStr,String formatStr){
 		Date dt = relativedelta(dateStr,offsetsStr);
+		if(StringUtils.isBlank(formatStr)){
+			String ds = dateStr.replace(" ", "").replace("-", "").replace(":", "");
+			boolean f2 = dateStr.contains(" ") || dateStr.contains(":") || dateStr.contains("-"); // 包含[:-空格]任何一个
+			if(ds.length()==8){//日期或日期+时间格式
+				if (f2)
+					formatStr="yyyy-MM-dd";
+				else
+					formatStr="yyyyMMdd";
+			}
+			else {
+				if (f2)
+					formatStr="yyyy-MM-dd HH:mm:ss";
+				else
+					formatStr="yyyyMMddHHmmss";
+			}
+		}
 		return getFormatDate(dt,formatStr);
-		
 	}
 	
 	/**

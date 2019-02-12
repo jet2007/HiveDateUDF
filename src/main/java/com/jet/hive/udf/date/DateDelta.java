@@ -67,14 +67,22 @@ public class DateDelta extends UDF {
 	 * @return
 	 */
 	public Text evaluate(Text... args) {
-		if(args.length>=2){
+		if(args.length==2){
 			String dt = args[0].toString();
-			String offsets = args.length>=2 ? args[1].toString():null;
-			String format = args.length>=3 ? args[2].toString():null;
+			String offsets = args[1].toString();
+			String format = null;
 			String re = DateUtils.dateDeltaStr(dt,offsets,format);
 			result.set(re);
 			return result;
-		}else if(args.length==1){
+		}else if(args.length>2){
+			String dt = args[0].toString();
+			String offsets = args[1].toString();
+			String format = args[2].toString();
+			String re = DateUtils.dateDeltaStr(dt,offsets,format);
+			result.set(re);
+			return result;
+		}
+		else if(args.length==1){
 			if (args[0]==null) {
 				return null;
 			}else{
