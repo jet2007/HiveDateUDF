@@ -60,6 +60,28 @@ public class DateUtils {
 	
 	
 	/**
+	 * 获取日期的当周的日期值；示例2020-12-17的周一为2020-12-14
+	 * @param dt 输入日期
+	 * @param dayOfWeek 周几(一周第一天为周一；周一为1)
+	 * @return 输出日期：获取日期的当周的日期值
+	 */
+	public static Date getDateByDayofWeekChina(Date dt, int dayOfWeek){
+		Calendar cal = Calendar.getInstance(); 
+        cal.setTime(dt); 
+		int dayWeek = cal.get(Calendar.DAY_OF_WEEK);//获得当前日期是一个星期的第几天 
+        if(1 == dayWeek) { 
+           cal.add(Calendar.DAY_OF_MONTH, -1); // 星期天
+        } 
+       cal.setFirstDayOfWeek(Calendar.MONDAY);//设置一个星期的第一天，按中国的习惯一个星期的第一天是星期一 
+       int day = cal.get(Calendar.DAY_OF_WEEK);//获得当前日期是一个星期的第几天 
+       cal.add(Calendar.DATE, cal.getFirstDayOfWeek()-day);//根据日历的规则，给当前日期减去星期几与一个星期第一天的差值  
+       cal.add(Calendar.DATE, dayOfWeek-1);
+       return cal.getTime();
+		
+	}
+	
+	
+	/**
 	 * 仿python relativedelta实现日期相加操作,返回String
 	 * 示例： offsetsStr：[year=+2, month=8, day=-16]  年份加2，月份为8，日期减16 
 	 * @param dateStr 支持yyyyMMddHHmmss和yyyy-MM-dd HH:mm:ss
@@ -155,17 +177,26 @@ public class DateUtils {
 			for (int i = 0; i < offsets.length; i++) {
 				String[] offset = offsets[i].trim().split("=");
 				int field = offsetUnit(offset[0].trim());
-				String value = offset[1];
+				String value = offset[1].trim();
+				
+				//包含+或-号，如d=+3,d=-2
 				if(value.contains("+") || value.contains("-")){
-					cal.add( field, Integer.parseInt(offset[1]));
+					if(field != Calendar.DAY_OF_WEEK){// 不处理周内的加减；只处理年月日时分秒的加减
+						cal.add( field, Integer.parseInt(value));
+					}					
 				}
-				else{
-					int off;
-					if (field==Calendar.MONTH) 
-							off=Integer.parseInt(offset[1])-1;
-					else
-						off=Integer.parseInt(offset[1]);
-					cal.set( field, off );
+				else{//只有=号，如d=3,m=1
+					int offInput=Integer.parseInt(value);
+					if (field==Calendar.MONTH) { // 月
+							cal.set( field, offInput-1 );
+						}
+					else if(field==Calendar.DAY_OF_WEEK){ // 周几的赋值
+						Date d1 = getDateByDayofWeekChina(cal.getTime(), offInput);
+						cal.setTime(d1);
+					}
+					else{ //处理年日时分秒
+						cal.set( field, offInput );
+					}
 				}
 			}
 			return cal.getTime();
@@ -190,25 +221,36 @@ public class DateUtils {
 			return Calendar.MINUTE;
 		else if (offsetStr.equals("second") || offsetStr.equals("s"))
 			return Calendar.SECOND;
+		else if (offsetStr.equals("week") || offsetStr.equals("w"))
+			return Calendar.DAY_OF_WEEK;
 		else
 			return -1;
 	}
 	
-//	public static void main(String[] args) {
-//		String dt="20180102";
-//		Date re = relativedelta(dt,"+1");
-//		String reStr = getFormatDate(re,"yyyy-MM-dd HH:mm:ss");
-//		//System.out.println(reStr); 
-//		
-//		String dt1=null;
-//		dt1="20180102030405";
-//		dt1="2018-01-02 03:04:05";
-//		dt1="20180102";
-//		String re1 = dateDeltaStr(dt1,"month=1,day=1,day=-1");
-//		System.out.println(re1);
-//		
-//		
-//	}
+	public static void main(String[] args) {
+		String dt="2018-01-02 11:22:33";
+		Date re = relativedelta(dt,"+1");
+		String reStr = getFormatDate(re,"yyyy-MM-dd HH:mm:ss");
+		//System.out.println(reStr); 
+		
+		String dt1=null;
+		dt1="20180102030405";
+		dt1="2018-01-02 03:04:05";
+		dt1="2020-12-14";
+		String re1 = dateDeltaStr(dt1,"d=1,w1");
+		System.out.println("#####="+re1);
+		
+		
+		
+//		String dt2="20201220112233";
+//		Date re2 = relativedelta(dt2,"+0");
+//		Date re3 = getDateByDayofWeekChina(re2, 2);
+//		String reStr3 = getFormatDate(re3,"yyyy-MM-dd HH:mm:ss");
+//		System.out.println("#####"+reStr3); 
+		
+		
+		
+	}
 	
 	
 	
