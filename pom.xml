@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.jet</groupId>
 	<artifactId>jet-hive-date-udf</artifactId>
-	<version>0.1</version>
+	<version>0.3</version>
 	<name>jet-hive-date-udf</name>
 	<description>hive date delta udf</description>
 

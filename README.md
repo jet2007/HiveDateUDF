@@ -55,31 +55,116 @@ create temporary function DateDelta
   - Desc: As python relativedelta function, get the date/datetime delta calculation in a easy way! 
     - With this function, you can get any **date/datetime** wanted,  ex. the end day of this month, three months ago, 90 days ago...
     - Include year, month, day , hour, minute, second calculation(add, sub, and set)
+    
   - Params:
     - date: the input date/datetime String
       - support: "yyyyMMdd, yyyy-MM-dd, yyyyMMddHHmmss, yyyy-MM-dd HH:mm:ss"
       - demo:  '20180102','20180102030405','2018-01-02 03:04:05'
-    - offsets: delta String, Format M1=D1,M2=D2,...... , Separter by ',' and '='
-      - M: year,month,day,hour,minute,second(Or y,m,d,h,n,s); Or week/w:day of week(monday is 1st day of week)
-      - D: +N,-N,N(N is a Number); when M:week/w then D:N work,bug +N/-N is not working(exg, w=1);
-      - demo: year=+2,month=8,day=-16,week=1
-      - Sepecial Way(date cal): DateDelta('20180102','+3')==DateDelta('20180102','day=+3'),  DateDelta('20180102','3')=DateDelta('20180102','day=3');
+    - offsets: delta String
     - \[Format\]: Option, Date/Datetime Format, Exg."yyyyMMdd, yyyy-MM-dd, yyyyMMddHHmmss, yyyy-MM-dd HH:mm:ss"
       - If this para is blank, the output value format likes the input date/datetime string format, see demo
+    
+    
+    
+    【offsets】Details and Demo
+    
+    
+    
+    【offsets】**Date Type:**
+    
+    | Date Type                              | Code                              | Recommend   | Remarks                                                      |
+    | -------------------------------------- | --------------------------------- | ----------- | ------------------------------------------------------------ |
+    | type1                                  | year,month,day,hour,minute,second | y,m,d,h,n,s |                                                              |
+    | day of week(monday is 1st day of week) | week                              | w           | monday=1,...sunday=7<br />Operator Type Only Support:"=";  Not Support:"+ OR -" |
+    |                                        |                                   |             |                                                              |
+    |                                        |                                   |             |                                                              |
+    
+    
+    
+    【offsets】**Operator Type**
+    
+    | Operator Type | Code | Demo                             |
+    | ------------- | ---- | -------------------------------- |
+    | add           | +    | d+1 -->  +1day                   |
+    | minus         | -    | d-1 -->   -1day                  |
+    | equal         | =    | d=1 --> first day of xxxx;<br /> |
+    
+    
+    
+    【offsets】 **Format1**(**recommend**) ，support by v0.3+
+    
+    ​     Demo:     d-1,m-1,y=1
+    
+    
+    
+    | DESC                 | CODE                                             | RESULT     |
+    | -------------------- | ------------------------------------------------ | ---------- |
+    | day +3               | SELECT DateDelta('20180102','d+3')               | 20180105   |
+    | end day of this year | SELECT DateDelta('2018-09-06','y+1,m=1,d=1,d-1') | 2018-12-31 |
+    | monday of this week  | SELECT DateDelta('20240927','w=1')               | 20240923   |
+    
+    
+    
+    
+    
+    【offsets】 **Format1**(**recommend**) ，support by v0.3+
+    
+    ​    Demo:     d=-1,m=-1,y=1
+    
+    
+    
+    | DESC                 | CODE                                               | RESULT     |
+    | -------------------- | -------------------------------------------------- | ---------- |
+    | day +3               | SELECT DateDelta('20180102','d=+3')                | 20180105   |
+    | end day of this year | SELECT DateDelta('2018-09-06','y=+1,m=1,d=1,d=-1') | 2018-12-31 |
+    |                      |                                                    |            |
+    
+    
+    
+    Offset **Format2**  (not recommend)
+    
+    ​    Demo:     d=-1,m=-1,y=1
+    
+    
+    
+    | DESC                 | CODE                                               | RESULT     |
+    | -------------------- | -------------------------------------------------- | ---------- |
+    | day +3               | SELECT DateDelta('20180102','d=+3')                | 20180105   |
+    | end day of this year | SELECT DateDelta('2018-09-06','y=+1,m=1,d=1,d=-1') | 2018-12-31 |
+    |                      |                                                    |            |
+    
+    
+    
+    Offset Format3 (**shortcut**)
+    
+    ​    Demo:    +1  or  -1
+    
+    
+    
+    | DESC   | CODE                              | RESULT   |
+    | ------ | --------------------------------- | -------- |
+    | day +3 | SELECT DateDelta('20180102','+3') | 20180105 |
+    | day -3 | SELECT DateDelta('20180102','-1') | 20180101 |
+    |        |                                   |          |
+    
+    
+  
 - DEMO:
 
-| DESC                          | CODE                                                         | RESULT              |
-| ----------------------------- | ------------------------------------------------------------ | ------------------- |
-| day +3                        | SELECT DateDelta('20180102','+3')                            | 20180105            |
-| day +3                        | SELECT DateDelta('20180102','day=+3')                        | 20180105            |
-| day +3                        | SELECT DateDelta('2018-01-02','day=+3')                      | 2018-01-05          |
-| datetime +3day                | SELECT DateDelta('20180102030405','day=+3')                  | 20180105030405      |
-| datetime +3day                | SELECT DateDelta('2018-01-02 03:04:05','day=+3')             | 2018-01-05 03:04:05 |
-| end day of this year          | SELECT DateDelta('2018-09-06','year=+1,month=1,day=1,day=-1') | 2018-12-31          |
-| end day of last month         | SELECT DateDelta('20180906','day=1,day=-1')                  | 20180831            |
-| end day of this year          | SELECT DateDelta('2018-09-06','y=+1,m=1,d=1,d=-1')           | 2018-12-31          |
-| Monday of week                | SELECT DateDelta('2020-12-17','w=1')                         | 2020-12-14          |
-| end day of last month(Format) | SELECT DateDelta('2018-09-06','day=1,day=-1','<u>**yyyyMMdd**</u>') | 20180831            |
+| DESC                                  | CODE                                                         | RESULT              | Recommend |
+| ------------------------------------- | ------------------------------------------------------------ | ------------------- | --------- |
+| day +3                                | SELECT DateDelta('20180102','+3')                            | 20180105            | *         |
+| day +3                                | SELECT DateDelta('20180102','day=+3')                        | 20180105            |           |
+| day +3                                | SELECT DateDelta('2018-01-02','d+3')                         | 2018-01-05          | *         |
+| datetime +3day                        | SELECT DateDelta('20180102030405','d+3')                     | 20180105030405      | *         |
+| datetime +3day                        | SELECT DateDelta('2018-01-02 03:04:05','d+3')                | 2018-01-05 03:04:05 | *         |
+| end day of this year                  | SELECT DateDelta('2018-09-06','year=+1,month=1,day=1,day=-1') | 2018-12-31          |           |
+| end day of this year                  | SELECT DateDelta('2018-09-06','y+1,m=1,d=1,d-1')             | 2018-12-31          | *         |
+| end day of this year                  | SELECT DateDelta('2018-09-06','y=+1,m=1,d=1,d=-1')           | 2018-12-31          |           |
+| Monday of week                        | SELECT DateDelta('2020-12-17','w=1')                         | 2020-12-14          |           |
+| end day of last month(**New Format**) | SELECT DateDelta('2018-09-06','d=1,d-1','<u>**yyyyMMdd**</u>') | 20180831            | *         |
+
+
 
 
 
@@ -130,7 +215,7 @@ create temporary function DateDelta
   - The output date value format is yyyyMMdd , Equals CurrentDateTimeFormatDelta(offsets,'<u>yyyyMMdd</u>')
   - Params: offsets
     - see DateDelta's paras above
-    
+  
 - DEMO( current time =[2019-02-01 11:06:31])
 
 | DESC                  | CODE                                        | RESULT   |
@@ -150,7 +235,7 @@ create temporary function DateDelta
   - The output date value format is \[yyyy-MM-dd hh:mm:ss\], Equals CurrentDateTimeFormatDelta(offsets,'<u>yyyy-MM-dd</u> hh:mm:ss')
   - Params: offsets
     - see DateDelta's paras above
-    
+  
 - DEMO( current time =[2019-02-01 11:06:31])
 
 | DESC                  | CODE                                           | RESULT              |
@@ -194,4 +279,18 @@ create temporary function DateDelta
 ## Note
 
 * 20201217 add day of week 
+* 20240926 fix bug and offsets support format1
+
+
+
+# Build
+
+mvn build --> **jet-hive-date-udf-x.jar**
+
+```
+cd xxxxxx
+mvn clean package -DskipTests
+```
+
+
 

@@ -18,13 +18,17 @@
 
 package com.jet.hive.udf.date;
 
+import com.jet.utils.string.StringUtils;
 import org.apache.hive.pdk.HivePdkUnitTest;
 import org.apache.hive.pdk.HivePdkUnitTests;
 
 import org.apache.hadoop.hive.ql.exec.Description;
 import org.apache.hadoop.hive.ql.exec.UDF;
+import org.apache.hadoop.hive.ql.metadata.HiveException;
 import org.apache.hadoop.io.Text;
 import com.jet.utils.date.DateUtils;
+
+import java.text.ParseException;
 
 /**
  * <code>DateDelta(date,offsets)</code>. 
@@ -66,32 +70,47 @@ public class DateDelta extends UDF {
 	 * @param args
 	 * @return
 	 */
-	public Text evaluate(Text... args) {
-		if(args.length==2){
-			String dt = args[0].toString();
-			String offsets = args[1].toString();
-			String format = null;
-			String re = DateUtils.dateDeltaStr(dt,offsets,format);
-			result.set(re);
-			return result;
-		}else if(args.length>2){
-			String dt = args[0].toString();
-			String offsets = args[1].toString();
-			String format = args[2].toString();
-			String re = DateUtils.dateDeltaStr(dt,offsets,format);
-			result.set(re);
-			return result;
-		}
-		else if(args.length==1){
-			if (args[0]==null) {
+	public Text evaluate(Text... args) throws HiveException{
+		String dt,offsets,format,re;
+
+
+
+
+
+
+
+		// 空值与空串，返回NULL
+		if(args.length==0) {
+			return null;
+		}else{
+			if(args[0]==null){
 				return null;
-			}else{
+			}
+			if (StringUtils.isBlank(args[0].toString())) {
 				result.set(args[0].toString());
 				return result;
 			}
-		}else{
-			return null;
 		}
-		
+
+		dt=args[0].toString();
+		if(args.length==1){
+				result.set(dt);
+				return result;
+		}else if(args.length== 2 ){
+			offsets = args[1].toString();
+			format = null;
+		}else{
+			offsets = args[1].toString();
+			format = args[2].toString();;
+		}
+//		try {
+//			re = DateUtils.dateDeltaStr(dt,offsets,format);
+//		} catch (Exception e) {
+//			throw new HiveException("date format fail; demo format=[2021-05-28 or 20210528]; or offsets input error");
+//		}
+		re = DateUtils.dateDeltaStr(dt,offsets,format);
+		result.set(re);
+		return result;
+
 	}
 }
